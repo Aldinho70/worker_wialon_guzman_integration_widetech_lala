@@ -4,15 +4,15 @@ import axios from 'axios';
 dotenv.config();
 
 // Variables de configuración
-const BASE_URL = process.env.BASE_URL;  
-const TOKEN = process.env.TOKEN;        
+const BASE_URL_WIALON = process.env.BASE_URL_WIALON;  
+const TOKEN_WIALON = process.env.TOKEN_WIALON;        
 
 async function authenticate() {
     try {
-        const response = await axios.get(`${BASE_URL}`, {
+        const response = await axios.get(`${BASE_URL_WIALON}`, {
             params: {
                 svc: 'token/login',
-                params: JSON.stringify({ token: TOKEN })
+                params: JSON.stringify({ token: TOKEN_WIALON })
             }
         });
         const { eid } = response.data;
@@ -28,7 +28,7 @@ async function authenticate() {
 async function getUnits(eid) {
     try {
         const flags = -1; 
-        const response = await axios.get(`${BASE_URL}`, {
+        const response = await axios.get(`${BASE_URL_WIALON}`, {
             params: {
                 svc: 'core/search_items',
                 params: JSON.stringify({
