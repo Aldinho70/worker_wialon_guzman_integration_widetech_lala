@@ -96,28 +96,35 @@ const mapDevice = (element, index) => {
     
     return {
         strAlias: nm,
-        strGpsID: id || "",
-        IMEI: uid,
-        intEvent: 0,
-        intMsgSequence: lmsg?.p?.number || 0,
-        dblongitude: x,
-        dbLatitude: y,
-        dbAltitude: z, 
-        intCourse: c, 
-        intSatellites: (satt > 13) ? 1 : satt,
-        intGpsFix: f,
-        dbSpeed: s,
-        intInputStatus: lmsg?.i,
-        intOutputStatus: lmsg?.o,
+        intEvent: 113,
+
+        IMEI: getValueFlds(flds, 'IDWT') || '',
+        strGpsID: getValueFlds(flds, 'IDWT') || '',
+
+        intGpsDate:     t || 0,
+        intServerDate:  t || 0,
+
+        dbLatitude:  y || 0.0,
+        dbLongitude: x || 0.0,
+        dbAltitude:  z || 0.0,
+
+        intCourse: c || 0,
+        dbSpeed: s || 0.0,
         dbOdometer: element?.lmsg?.p?.mileage || 0,
-        strLocation: "Error API google.maps.com",
-        intGpsDate: t,
-        intServerDate: t,
-        dbBatteryLevel: lmsg?.p?.battery || 0,
+
+        strLocation: "Error Api Google.Maps.com/BufferInt", // aquí deberías meter la dirección real
+
+        intMsgSequence: lmsg?.p?.number || 1,
+        intGpsFix: f ?? 5,
+        intSatellites: (satt > 13) ? 1 : satt,
+        intHDOP: element?.lmsg?.p?.hdop ?? 1,
+
         intInputStatus: 0,
         intOutputStatus: 0,
+
         strDriverID: element?.lmsg?.p?.driver || "",
-        intHDOP: element?.lmsg?.p?.hdop || 0,
+
+        dbBatteryLevel: lmsg?.p?.battery || 12.97
     };
 };
 
