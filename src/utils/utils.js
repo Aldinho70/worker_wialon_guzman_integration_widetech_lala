@@ -61,13 +61,13 @@ const getValueFlds = (flds = {}, field) =>
     Object.values(flds).find(f => f.n === field)?.v;
 
 const getSensorValues = (sens = {}, prms = {}) => {
-    try{
+    try {
         let odometro = 0, fuel = 0, rpm = 0, battery = 0;
 
         for (const sensor of Object.values(sens)) {
             // console.log( sensor.n );
             switch (sensor.n) {
-                
+
                 case SENSORS.ODO:
                     odometro = (prms['can_distance']?.v ?? 0);
                     break;
@@ -84,47 +84,56 @@ const getSensorValues = (sens = {}, prms = {}) => {
         }
 
         return { odometro, fuel, rpm, battery };
-    }catch ( error ) {
+    } catch (error) {
         console.log(error);
-        
+
     }
 };
 
 const mapDevice = (element, index) => {
     const { nm, pos = {}, prms, sens, uid, flds, p = {}, lmsg = {}, id } = element;
     const { x, y, s, t, sc: satt, z, c, f } = pos;
-    
+
     return {
-        strAlias: nm,
+        strAlias: String(nm || ""),
         intEvent: 113,
 
-        IMEI: getValueFlds(flds, 'IDWT') || '',
-        strGpsID: getValueFlds(flds, 'IDWT') || '',
+        IMEI: String(getValueFlds(flds, 'IDWT') || ""),
+        strGpsID: String(getValueFlds(flds, 'IDWT') || ""),
 
-        intGpsDate:     t || 0,
-        intServerDate:  t || 0,
+        intGpsDate: parseInt(t) || 0,
+        intServerDate: parseInt(t) || 0,
 
-        dbLatitude:  y || 0.0,
-        dbLongitude: x || 0.0,
-        dbAltitude:  z || 0.0,
+        dbLatitude: Number(y) || 0,
+        dbLongitude: Number(x) || 0,
 
-        intCourse: c || 0,
-        dbSpeed: s || 0.0,
-        dbOdometer: element?.lmsg?.p?.mileage || 0,
+        // ⚠️ FORZAR ENTERO (WCF issue)
+        dbAltitude: Math.floor(z || 0),
 
-        strLocation: "Error Api Google.Maps.com/BufferInt", // aquí deberías meter la dirección real
+        intCourse: parseInt(c) || 0,
+        dbSpeed: Number(s) || 0,
 
-        intMsgSequence: lmsg?.p?.number || 1,
-        intGpsFix: f ?? 5,
-        intSatellites: (satt > 13) ? 1 : satt,
-        intHDOP: element?.lmsg?.p?.hdop ?? 1,
+        // ⚠️ FORZAR ENTERO
+        dbOdometer: Math.floor(element?.lmsg?.p?.mileage || 0),
+
+        strLocation: "Error Api Google.Maps.com/BufferInt",
+
+        intMsgSequence: parseInt(lmsg?.p?.number) || 1,
+
+        intGpsFix: 5,
+
+        // ⚠️ ENTERO seguro
+        intSatellites: parseInt((satt > 13 ? 1 : satt)) || 0,
+
+        // 🔥 AQUÍ ESTABA SU ERROR
+        intHDOP: Math.floor(element?.lmsg?.p?.hdop ?? 1),
 
         intInputStatus: 0,
         intOutputStatus: 0,
 
-        strDriverID: element?.lmsg?.p?.driver || "",
+        strDriverID: String(element?.lmsg?.p?.driver || ""),
 
-        dbBatteryLevel: lmsg?.p?.battery || 12.97
+        dbBatteryLevel: Number(lmsg?.p?.battery) || 12.97
     };
 };
 
